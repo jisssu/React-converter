@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Super Convert</title>
+    <link rel="icon" type="image/ico" href="favicon.ico" />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;600;700;800;900&display=swap");
+
+      *{
+        padding : 0;
+        margin: 0;
+      }
+
+      html, body {
+        font-family: "Poppins", sans-serif;
+        width: 100%;
+        height: 100%;
+        background-color:  #f5efee;
+      }
+
+      .select::-ms-expand, input::-ms-expand{ /*인터넷익스플로어 대응*/
+        display: none;   /*select에서 옵션 선택할 때 화살표 안 보이게 함*/
+      } 
+      .select {
+        font-family: "Poppins", sans-serif;
+        appearance: none; /*select 자체 디자인 (화살표 등) 제거*/
+        padding: 10px;
+        border: 2px solid #000;
+        width: 100%;
+        outline: none; /*border 바깥 외곽선*/
+        text-align: center;
+        font-size: 20px;
+        font-weight: 600;
+        background-color: #f5865e;
+        cursor: pointer; /*마우스커서 모양 바꾸기*/
+        color: #000;
+      }
+
+      input {
+        font-family: "Poppins", sans-serif;
+        appearance: none;
+        padding: 10px;
+        outline: none;
+        width: 100%;
+        border: 2px solid #000;
+        box-sizing: border-box;
+        font-size: 16px;
+        font-weight: 600;
+        border-radius: 0;
+      }
+      input:disabled {
+        background-color: #000;
+        color: #fff;
+        opacity: 1; /*투명도 조절 0에 가까울수록 투명함*/
+        -webkit-text-fill-color: #fff; /*color와 비슷한 기능*/
+      }
+      input::placeholder {
+        color: #eee;
+      }
+
+      .list {
+        height: 0;
+        margin-top: -2px;
+        overflow: hidden; /*내부공간보다 담아야하는 컨텐츠가 더 많은 경우 밖으로 나오는 내용은 숨겨줌*/
+        transition: height 0.2s;
+        border: 2px solid #000;
+        border-top: none;
+        }
+      .list.toggle {
+        height: 90px;
+        }
+      .list li {
+        background-color: #fff;
+        padding: 10px;
+        border-bottom: 2px solid #000;
+        cursor: pointer;
+        }
+      .list li:hover, /*사용자의 커서가 올라가 있는 요소*/
+      .list li:active { /*사용자가 요소를 활성화(마우스 클릭 등)*/
+        background-color: #000;
+        color: #fff;
+      }  
+      .list li:last-child {
+        border-bottom: none;
+      }
+
+      .bigTitle {
+        background-color: #ffe88e;
+        padding: 16px 20px;
+        border-bottom: 2px solid #000;
+      }
+      .bigTitle .wrap {
+        max-width: 500px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 0 auto;
+      }
+      .bigTitle h1 {
+        font-size: 2rem;
+        font-weight: 600;
+      }
+
+      .container {
+        padding: 45px 20px;
+        max-width: 500px;  /*최대 500*/
+        margin: 0 auto;
+      }
+
+      .resetIcon {
+        outline: none;
+        border: 2px solid #000;
+        width: 36px;
+        height: 36px;
+        padding: 4px;
+        cursor: pointer;
+        border-radius: 100px;
+        background-color: #f5875e;
+        transition: all 0.2s;
+      }
+      .resetIcon:hover {
+        transform: rotateZ(360deg) scale(1.1); /*3차원 회전, 확대 기능*/
+      }
+      .resetIcon.yellow {
+        background-color: #ffe88e;
+      }
+
+      .mainImg { 
+        width: 50%;
+        margin: 20px auto 0;
+        display: block;
+      }
+
+      .switch {
+        cursor: pointer;
+        width: 72px;
+        height: 36px;
+        appearance: none;
+        border: 2px solid #000;
+        background: #c389ce;
+        border-radius: 100px;
+        position: relative; /*요소 자기 자신의 원래 위치를 기준으로 배치*/
+        outline: none;
+        font-size: 16px;
+      }
+      .switch::after { /*요소 내용 끝에 새 컨텐츠 추가*/
+        content: "";
+        position: absolute;
+        width: 24px;
+        height: 24px;
+        background: #fff;
+        left: 3px;
+        top: 3px;
+        border-radius: 100px;
+        border: 2px solid #000;
+        transition: all 0.2s;
+      }
+      .switch.toggle::after {
+        left: 37px;
+      }
+
+      .btnGroup {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 20px 0;
+      }
+      .btnGroup > div { /*자식 선택자 특정 요소의 자식 요소 선택함*/
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .arrow-right {
+        margin-top: 20px;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 5px 0 5px 5px; /*상단부터 시계방향*/
+        border-color: transparent transparent transparent #000000;
+      }
+      .arrow-left {
+        margin-top: 20px;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 5px 5px 5px 0; /*상단부터 시계방향*/
+        border-color: transparent #000000 transparent transparent;
+      }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+</body>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script> <!--어플리케이션이 interactive하도록 만들어줌-->
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script> <!--react element들을 HTML body 안으로 넣어줌-->
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel">
+    function MinutesToHours(){
+        const labalStyle = {
+            display : "block",
+            fontWeight : 600,
+            fontSize : 20
+        }
+        const divStyle = {
+            marginBottom : "10px",
+            flex : 1
+        }
+        const [amount, setAmount] = React.useState(0)
+        const [invert, setInvert] = React.useState(false)
+        const onChange=(event)=>{
+            setAmount(event.target.value);
+        }
+        const reset = ()=> setAmount(0);
+        const onInvert = ()=> {
+            const switchToggle = document.querySelector(".switch");
+            switchToggle.classList.toggle("toggle");
+            reset();
+            setInvert((current)=>!current);
+        }
+        return (<div>
+        <div style={{display:"flex", justityContent:"space-between", alignItems:"center", gap:20}}>
+        <div style={divStyle}>
+        <label htmlFor="minutes" style={labalStyle}>Minutes</label>
+        <input 
+        value={invert ? amount*60 : amount} id="minutes" placeholder="Minutes" type="number" 
+        onChange={onChange}
+        disabled={invert}/>
+        </div>
+        <div className={invert ? "arrow-left" : "arrow-right"}></div>
+        <div style={divStyle}>
+        <label htmlFor="hours" style={labalStyle}>Hours</label>
+        <input 
+        value={invert ? amount : Math.round(amount / 60)} id="hours" placeholder="Hours" type="number" 
+        onChange={onChange}
+        disabled={!invert}/>
+        </div>
+        </div>
+        <div className="btnGroup">
+        <div>
+        <button onClick={reset} className="resetIcon yellow">
+            <svg
+               xmln="http://www.w3.org/2000/svg"
+               x="0px"
+               y="0px"
+               width="24"
+               height="24"
+               viewBox="0 0 24 24" >
+               <path d="M 2 2 L 4.9394531 4.9394531 C 3.1262684 6.7482143 2 9.2427079 2 12 C 2 17.514 6.486 22 12 22 C 17.514 22 22 17.514 22 12 C 22 6.486 17.514 2 12 2 L 12 4 C 16.411 4 20 7.589 20 12 C 20 16.411 16.411 20 12 20 C 7.589 20 4 16.411 4 12 C 4 9.7940092 4.9004767 7.7972757 6.3496094 6.3496094 L 9 9 L 9 2 L 2 2 z"></path>
+            </svg>
+        </button>
+        <span>Reset</span>
+        </div>
+        <div>
+            {invert ? <span>Hours</span> : <span>Minutes</span>}
+        <button onClick={onInvert} className="switch"></button>
+        </div>
+        </div>
+        </div>);
+    }
+    function KMToMiles(){
+        const labalStyle = {
+            display : "block",
+            fontWeight : 600,
+            fontSize : 20
+        }
+        const divStyle = {
+            marginBottom : "10px",
+            flex : 1
+        }
+        const [amount, setAmount] = React.useState()
+        const [invert, setInvert] = React.useState(false)
+        const onChange = (event)=> {
+          setAmount(event.target.value);
+        }
+        const reset= ()=> {
+          setAmount(0);
+        }
+        const onInvert = ()=> {
+            const switchToggle = document.querySelector(".switch")
+            switchToggle.classList.toggle("toggle");
+            reset();
+            setInvert((current)=>!current);
+        }
+        return (<div>
+        <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", gap: 20,}}>
+        <div style={divStyle}>
+            <label htmlFor="Kilometers" style={labalStyle}>KM</label>
+            <input 
+            value={invert ? Math.round(amount*1.609344) : amount}
+            id="Kilometers" placeholder="Kilometers" type="number"
+            onChange={onChange}
+            disabled={invert}/>
+        </div>
+        <div className={invert ? "arrow-left" : "arrow-right"}></div>
+        <div style={divStyle}>
+            <label htmlFor="Miles" style={labalStyle}>M</label>
+            <input 
+            value={invert ? amount : Math.round(amount/1.609344)}
+            id="Miles" placeholder="Miles" type="number"
+            onChange={onChange}
+            disabled={!invert}/>
+        </div>
+        </div>
+        <div className="btnGroup">
+        <div>
+        <button onClick={reset} className="resetIcon yellow">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              x="0px"
+              y="0px"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+            >
+              <path d="M 2 2 L 4.9394531 4.9394531 C 3.1262684 6.7482143 2 9.2427079 2 12 C 2 17.514 6.486 22 12 22 C 17.514 22 22 17.514 22 12 C 22 6.486 17.514 2 12 2 L 12 4 C 16.411 4 20 7.589 20 12 C 20 16.411 16.411 20 12 20 C 7.589 20 4 16.411 4 12 C 4 9.7940092 4.9004767 7.7972757 6.3496094 6.3496094 L 9 9 L 9 2 L 2 2 z"></path>
+            </svg></button>
+            <span>Reset</span>
+        </div>
+        <div>
+            {invert ? <span>KM</span> : <span>Miles</span>}
+        <button onClick={onInvert} className="switch"></button>
+        </div>
+        </div>
+        </div>
+        )
+    }
+    function APP(){
+        const [index, setIndex] = React.useState("0") /*state가 변경되면 리렌더링 됨*/
+        const onSelect = (event)=>{
+            const list = document.querySelector(".list")
+            list.classList.toggle("toggle");
+        }
+        const onClickList = (event)=> {
+            setIndex(event.target.value);
+            const list = document.querySelector(".list")
+            list.classList.remove("toggle");
+        }
+        return (<div className="wrap">
+         <div className="bigTitle">
+         <div className="wrap">
+            <h1>Super Converter</h1>
+            <button onClick={()=>{setIndex(); 
+                            const list = document.querySelector(".list")
+                            list.classList.remove("toggle");}}
+            className="resetIcon">
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                x="0px"
+                y="0px"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+            >
+                <path d="M 2 2 L 4.9394531 4.9394531 C 3.1262684 6.7482143 2 9.2427079 2 12 C 2 17.514 6.486 22 12 22 C 17.514 22 22 17.514 22 12 C 22 6.486 17.514 2 12 2 L 12 4 C 16.411 4 20 7.589 20 12 C 20 16.411 16.411 20 12 20 C 7.589 20 4 16.411 4 12 C 4 9.7940092 4.9004767 7.7972757 6.3496094 6.3496094 L 9 9 L 9 2 L 2 2 z"></path>
+            </svg>
+              </button>
+        </div>
+        </div>
+        <article className="container" style={{paddingBottom: 0}}>
+            <button className="select" onClick={onSelect}>
+                {index === 0 ? "Minutes To Hours" 
+                   :index === 1 ? "KM To Miles" 
+                      :"Please select one!"}
+            </button>
+        <ul className="list">
+            <li onClick={onClickList} value="0" className={index === 0 ? "active" : ""}>
+                Minutes To Hours
+            </li>
+            <li onClick={onClickList} value="1" className={index === 1 ? "active" : ""}>
+                KM To Miles
+            </li>
+        </ul>
+        </article>
+        <main className="container">
+        {index === 0 ? (<MinutesToHours />) 
+            :index === 1 ? (<KMToMiles />) 
+                :(<img
+                    className="mainImg"
+                    src="Calculator_Flatline.svg"
+                    alt="Calculator Image" />)}  {/*중괄호 안에 JS 문법 적을 수 있음 현재 삼항조건문 적은 것*/}
+        </main>
+        </div>);
+    }
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<APP />);
+</script>
+</html>
